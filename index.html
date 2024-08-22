@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karaoke Player</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background: #2a2a2a;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444444;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #333333;
+            color: #f0f0f0;
+            box-sizing: border-box;
+        }
+        .dropdown-content {
+            background-color: #333333;
+            width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 8px;
+            position: relative;
+        }
+        .dropdown-content div {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            color: #f0f0f0;
+            border-bottom: 1px solid #444444;
+            transition: background-color 0.3s ease;
+            display: grid;
+            grid-template-columns: 100px 1fr 100px 1fr; /* Fixed width for labels */
+            gap: 10px;
+        }
+        .dropdown-content div:hover {
+            background-color: #444444;
+        }
+        .label-bold {
+            font-weight: bold;
+            text-decoration: underline;
+            text-align: right; /* Right align the label */
+        }
+        video {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Karaoke Flute à bec</h1>
+
+    <!-- Global Search -->
+    <input type="text" id="globalSearch" class="search-input" placeholder="Search by song or artist...">
+    
+    <!-- Artist Search -->
+    <input type="text" id="artistSearch" class="search-input" placeholder="Search by artist...">
+    
+    <!-- Dropdown Content -->
+    <div class="dropdown-content" id="dropdownContent"></div>
+
+    <video id="videoPlayer" controls></video>
+</div>
+
+<script>
+    const songs = [
+        'Gaston Mandeville-Le vieux du bas du fleuve.mp4',
+        'Les Cowboys Fringants-Gaétane.mp4',
+        'Les Cowboys Fringants-LAmérique pleure.mp4',
+        'Les Cowboys Fringants-Les étoiles filantes.mp4',
+        'Notre Dame de Paris-Belle.mp4',
+        'Notre Dame de Paris-Florence.mp4',
+        'Notre Dame de Paris-Le temps des cathédrales.mp4',
+        'Seal-Kiss From A Rose.mp4',
+    ];
+
+    const dropdownContent = document.getElementById('dropdownContent');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const globalSearch = document.getElementById('globalSearch');
+    const artistSearch = document.getElementById('artistSearch');
+
+    // Populate dropdown with all songs
+    function populateDropdown(filteredSongs) {
+        dropdownContent.innerHTML = ''; // Clear existing content
+
+        filteredSongs.forEach(fileName => {
+            const [artist, songWithExtension] = fileName.split('-');
+            const song = songWithExtension.replace('.mp4', '');
+
+            const optionDiv = document.createElement('div');
+            const songSpan = document.createElement('span');
+            const artistSpan = document.createElement('span');
+
+            const songLabel = document.createElement('span');
+            const artistLabel = document.createElement('span');
+
+            songLabel.classList.add('label-bold');
+            artistLabel.classList.add('label-bold');
+
+            songLabel.textContent = `Chanson: `;
+            artistLabel.textContent = `Artiste: `;
+
+            songSpan.textContent = song;
+            artistSpan.textContent = artist;
+
+            optionDiv.appendChild(songLabel);
+            optionDiv.appendChild(songSpan);
+            optionDiv.appendChild(artistLabel);
+            optionDiv.appendChild(artistSpan);
+
+            optionDiv.addEventListener('click', () => {
+                videoPlayer.src = `karaoke/${fileName}`;
+                videoPlayer.play();
+            });
+
+            dropdownContent.appendChild(optionDiv);
+        });
+    }
+
+    // Initially populate dropdown with all songs
+    populateDropdown(songs);
+
+    // Global Search Functionality
+    globalSearch.addEventListener('input', () => {
+        const query = globalSearch.value.toLowerCase();
+        const filteredSongs = songs.filter(fileName => {
+            const [artist, songWithExtension] = fileName.split('-');
+            const song = songWithExtension.replace('.mp4', '');
+            return artist.toLowerCase().includes(query) || song.toLowerCase().includes(query);
+        });
+        populateDropdown(filteredSongs);
+    });
+
+    // Artist Search Functionality
+    artistSearch.addEventListener('input', () => {
+        const query = artistSearch.value.toLowerCase();
+        const filteredSongs = songs.filter(fileName => {
+            const [artist] = fileName.split('-');
+            return artist.toLowerCase().includes(query);
+        });
+        populateDropdown(filteredSongs);
+    });
+</script>
+
+</body>
+</html>
